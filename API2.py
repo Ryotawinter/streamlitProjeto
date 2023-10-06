@@ -61,7 +61,7 @@ def get_puuid(summoner_name, region, api_key):
         resp = requests.get(api_url)
         player_info = resp.json()
         puuid = player_info['puuid']
-
+        print(puuid)
     except:
         print(f'Summoner não encontrado:{summoner_name}')
         puuid=0
@@ -153,289 +153,293 @@ def find_player_data(match_data, puuid):
 
 
 def gather_all_data(puuid, match_id, mass_region, api_key, role, tempo1, tempo2):
-    data = {'Nick': [],
-            'Data': [],
-            'champion': [],
-            'championenemy': [],
-            'kills': [],
-            'deaths': [],
-            'assists': [],
-            'win': [],
-            'position': [],
-            'tempo_total':[],
-            'cs': [],
-            'cspm': [],
-            'killParticipation': [],
-            'soloKills': [],
-            'teamDamagePercentage': [],
-            'visionScoreAdvantageLaneOpponent': [],
-            'visionScorePerMinute': [],
-            'detectorWardsPlaced': [],
-            'wardTakedownsBefore20M': [],
-            'wardTakedowns': [],
-            'firstBloodKill': [],
-            'firstBloodAssist': [],
-            'kda': [],
-            'turretPlatesTaken': [],
-            'dragonKills': [],
-            'wardsKilled': [],
-            'wardsPlaced': [],
-            'maxCsAdvantageOnLaneOpponent':[],
-            'laningPhaseGoldExpAdvantage': [],
-            f'cs@{tempo1}': [],
-            f'csdiff@{tempo1}': [],
-            f'jgdiff@{tempo1}': [],
-            f'golddiff@{tempo1}': [],
-            f'xpdiff@{tempo1}': [],
-            f'danodiff@{tempo1}': [],
-            f'csdiff@{tempo2}': [],
-            f'jgdiff@{tempo2}': [],
-            f'golddiff@{tempo2}': [],
-            f'xpdiff@{tempo2}': [],
-            f'danodiff@{tempo2}': [],
-            f'danodiff@3':[],
-            f'Dpm':[],
-            f'gameId': [],
-            f'gold15rend':[],
-            f'goldpm':[],
-            f'danoporgold':[],
-            f'cspmjg':[],
-            'xgeral':[],
-            'ygeral':[],
-            'fbvitima':[],
-            'wardtime':[],
-            'Side':[]
-            }
+    try:
+        data = {'Nick': [],
+                'Data': [],
+                'champion': [],
+                'championenemy': [],
+                'kills': [],
+                'deaths': [],
+                'assists': [],
+                'win': [],
+                'position': [],
+                'tempo_total':[],
+                'cs': [],
+                'cspm': [],
+                'killParticipation': [],
+                'soloKills': [],
+                'teamDamagePercentage': [],
+                'visionScoreAdvantageLaneOpponent': [],
+                'visionScorePerMinute': [],
+                'detectorWardsPlaced': [],
+                'wardTakedownsBefore20M': [],
+                'wardTakedowns': [],
+                'firstBloodKill': [],
+                'firstBloodAssist': [],
+                'kda': [],
+                'turretPlatesTaken': [],
+                'dragonKills': [],
+                'wardsKilled': [],
+                'wardsPlaced': [],
+                'maxCsAdvantageOnLaneOpponent':[],
+                'laningPhaseGoldExpAdvantage': [],
+                f'cs@{tempo1}': [],
+                f'csdiff@{tempo1}': [],
+                f'jgdiff@{tempo1}': [],
+                f'golddiff@{tempo1}': [],
+                f'xpdiff@{tempo1}': [],
+                f'danodiff@{tempo1}': [],
+                f'csdiff@{tempo2}': [],
+                f'jgdiff@{tempo2}': [],
+                f'golddiff@{tempo2}': [],
+                f'xpdiff@{tempo2}': [],
+                f'danodiff@{tempo2}': [],
+                f'danodiff@3':[],
+                f'Dpm':[],
+                f'gameId': [],
+                f'gold15rend':[],
+                f'goldpm':[],
+                f'danoporgold':[],
+                f'cspmjg':[],
+                'xgeral':[],
+                'ygeral':[],
+                'fbvitima':[],
+                'wardtime':[],
+                'Side':[]
+                }
 
-    def boolean_to_int(boolean_value):
-        if boolean_value:
-            return 1
-        else:
-            return 0
-    match_data = get_match_data(match_id, mass_region, api_key)
-    player_data = find_player_data(match_data, puuid)
-    id_player = player_data['participantId']
-    position = player_data['individualPosition']
-    gameId=match_data['info']['gameId']
-
-    # tempo game
-    minutos = match_data['info']['gameDuration'] // 60
-    segundos_restantes = match_data['info']['gameDuration'] % 60
-    tempo_total = f"{minutos}:{segundos_restantes}"
-    if int(minutos) > 15:
-        dia = match_data['info']['gameEndTimestamp']
-        dia = str(dia)[:10]
-        dia = datetime.utcfromtimestamp(int(dia))
-        dia = dia.strftime("%Y-%m-%d %H:%M:%S")
-        dia = dia.split(' ')
-        dia = dia[0]
-
-        if position == role:
-
-            # adversario
-            participants = match_data['metadata']['participants']
-            for p in participants:
-                if p != puuid:
-                    player_indexa = participants.index(p)
-                    a = match_data['info']['participants'][player_indexa]
-                    if a['individualPosition'] == position:
-                        adversario = a
-                else:
-                    continue
-
-            # timeline
-            match_data_time = get_match_data_timeline(match_id, mass_region, api_key)
-            player_data_timeline = match_data_time['info']['frames']
-            timeline3 = player_data_timeline[int(3)]['participantFrames'][str(id_player)]
-            timeline6 = player_data_timeline[int(tempo1)]['participantFrames'][str(id_player)]
-            timeline15 = player_data_timeline[int(tempo2)]['participantFrames'][str(id_player)]
-
-            xgeral = []
-            ygeral = []
-            wardtime = []
-            fbvitima = []
-
-            def process_data(i,xgeral,ygeral,wardtime,fbvitima,player_data_timeline):
-                try:
-                    x = player_data_timeline[i]['participantFrames'][str(id_player)]['position']['x']
-                    y = player_data_timeline[i]['participantFrames'][str(id_player)]['position']['y']
-                    eventos=player_data_timeline[i]['events']
-                    for event in eventos:
-                        if event.get('type') == 'WARD_PLACED':
-                            idevento = event['creatorId']
-                            if str(idevento) == str(id_player):
-                                wardtime.append(event.get('timestamp'))
-                        if event.get('killType') == 'KILL_FIRST_BLOOD':
-                            killer_id = event.get('killerId')
-                            if str(killer_id)==str(id_player):
-                                fbvitima.append(1)
-                            else:
-                                fbvitima.append(0)
-
-                    xgeral.append(int(x))
-                    ygeral.append(int(y))
-                except Exception as e:
-                    print(f"Erro na função process_data({i}): {str(e)}")
-
-            with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-                futures = [executor.submit(process_data, i,xgeral,ygeral,wardtime,fbvitima,player_data_timeline) for i in range(15)]
-
-                # Aguarde a conclusão de todas as tarefas
-                concurrent.futures.wait(futures)
-
-            # timeline adversario
-            id_player_a = adversario['participantId']
-            match_data_time_a = get_match_data_timeline(match_id, mass_region, api_key)
-            player_data_timeline_a = match_data_time_a['info']['frames']
-            timeline_a3 = player_data_timeline_a[int(3)]['participantFrames'][str(id_player_a)]
-            timeline_a6 = player_data_timeline_a[int(tempo1)]['participantFrames'][str(id_player_a)]
-            timeline_a15 = player_data_timeline_a[int(tempo2)]['participantFrames'][str(id_player_a)]
-
-            # assign the variables we're interested in
-            champion = player_data['championName']
-            championenemy = adversario['championName']
-            k = player_data['kills']
-            d = player_data['deaths']
-            a = player_data['assists']
-            win = player_data['win']
-            side=player_data['teamId']
-            if int(side)==100:
-                side='blue'
+        def boolean_to_int(boolean_value):
+            if boolean_value:
+                return 1
             else:
-                side = 'red'
-            cs = player_data['totalMinionsKilled']
-            cspm = round(player_data['totalMinionsKilled'] / minutos, 2)
-            cspmjg = round(player_data['neutralMinionsKilled'] / minutos, 2)
+                return 0
+        match_data = get_match_data(match_id, mass_region, api_key)
+        player_data = find_player_data(match_data, puuid)
+        id_player = player_data['participantId']
+        position = player_data['individualPosition']
+        gameId=match_data['info']['gameId']
+
+        # tempo game
+        minutos = match_data['info']['gameDuration'] // 60
+        segundos_restantes = match_data['info']['gameDuration'] % 60
+        tempo_total = f"{minutos}:{segundos_restantes}"
+        if int(minutos) > 15:
+            dia = match_data['info']['gameEndTimestamp']
+            dia = str(dia)[:10]
+            dia = datetime.utcfromtimestamp(int(dia))
+            dia = dia.strftime("%Y-%m-%d %H:%M:%S")
+            dia = dia.split(' ')
+            dia = dia[0]
+
+            if position == role:
+
+                # adversario
+                participants = match_data['metadata']['participants']
+                for p in participants:
+                    if p != puuid:
+                        player_indexa = participants.index(p)
+                        a = match_data['info']['participants'][player_indexa]
+                        if a['individualPosition'] == position:
+                            adversario = a
+                    else:
+                        continue
+
+                # timeline
+                match_data_time = get_match_data_timeline(match_id, mass_region, api_key)
+                player_data_timeline = match_data_time['info']['frames']
+                timeline3 = player_data_timeline[int(3)]['participantFrames'][str(id_player)]
+                timeline6 = player_data_timeline[int(tempo1)]['participantFrames'][str(id_player)]
+                timeline15 = player_data_timeline[int(tempo2)]['participantFrames'][str(id_player)]
+
+                xgeral = []
+                ygeral = []
+                wardtime = []
+                fbvitima = []
+
+                def process_data(i,xgeral,ygeral,wardtime,fbvitima,player_data_timeline):
+                    try:
+                        x = player_data_timeline[i]['participantFrames'][str(id_player)]['position']['x']
+                        y = player_data_timeline[i]['participantFrames'][str(id_player)]['position']['y']
+                        eventos=player_data_timeline[i]['events']
+                        for event in eventos:
+                            if event.get('type') == 'WARD_PLACED':
+                                idevento = event['creatorId']
+                                if str(idevento) == str(id_player):
+                                    wardtime.append(event.get('timestamp'))
+                            if event.get('killType') == 'KILL_FIRST_BLOOD':
+                                killer_id = event.get('killerId')
+                                if str(killer_id)==str(id_player):
+                                    fbvitima.append(1)
+                                else:
+                                    fbvitima.append(0)
+
+                        xgeral.append(int(x))
+                        ygeral.append(int(y))
+                    except Exception as e:
+                        print(f"Erro na função process_data({i}): {str(e)}")
+
+                with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+                    futures = [executor.submit(process_data, i,xgeral,ygeral,wardtime,fbvitima,player_data_timeline) for i in range(15)]
+
+                    # Aguarde a conclusão de todas as tarefas
+                    concurrent.futures.wait(futures)
+
+                # timeline adversario
+                id_player_a = adversario['participantId']
+                match_data_time_a = get_match_data_timeline(match_id, mass_region, api_key)
+                player_data_timeline_a = match_data_time_a['info']['frames']
+                timeline_a3 = player_data_timeline_a[int(3)]['participantFrames'][str(id_player_a)]
+                timeline_a6 = player_data_timeline_a[int(tempo1)]['participantFrames'][str(id_player_a)]
+                timeline_a15 = player_data_timeline_a[int(tempo2)]['participantFrames'][str(id_player_a)]
+
+                # assign the variables we're interested in
+                champion = player_data['championName']
+                championenemy = adversario['championName']
+                k = player_data['kills']
+                d = player_data['deaths']
+                a = player_data['assists']
+                win = player_data['win']
+                side=player_data['teamId']
+                if int(side)==100:
+                    side='blue'
+                else:
+                    side = 'red'
+                cs = player_data['totalMinionsKilled']
+                cspm = round(player_data['totalMinionsKilled'] / minutos, 2)
+                cspmjg = round(player_data['neutralMinionsKilled'] / minutos, 2)
 
 
-            killParticipation = player_data['challenges']['killParticipation']
-            soloKills = player_data['challenges']['soloKills']
-            teamDamagePercentage = player_data['challenges']['teamDamagePercentage']
-            visionScoreAdvantageLaneOpponent = player_data['challenges']['visionScoreAdvantageLaneOpponent']
-            visionScorePerMinute = player_data['challenges']['visionScorePerMinute']
-            detectorWardsPlaced = player_data['detectorWardsPlaced']
-            wardTakedownsBefore20M = player_data['challenges']['wardTakedownsBefore20M']
-            wardTakedowns = player_data['challenges']['wardTakedowns']
-            firstBloodKill = player_data['firstBloodKill']
-            firstBloodAssist = player_data['firstBloodAssist']
-            kda = player_data['challenges']['kda']
-            turretPlatesTaken = player_data['challenges']['turretPlatesTaken']
-            dragonKills = player_data['dragonKills']
-            wardsKilled = player_data['wardsKilled']
-            wardsPlaced = player_data['wardsPlaced']
-            maxCsAdvantageOnLaneOpponent=player_data['challenges']['maxCsAdvantageOnLaneOpponent']
-            laningPhaseGoldExpAdvantage=player_data['challenges']['laningPhaseGoldExpAdvantage']
-            danototal=player_data['totalDamageDealtToChampions']
-            dpm=danototal/minutos
-            goldtotal=player_data['goldEarned']
-            goldpm=goldtotal/minutos
-            danoporgold=goldtotal/danototal
+                killParticipation = player_data['challenges']['killParticipation']
+                soloKills = player_data['challenges']['soloKills']
+                teamDamagePercentage = player_data['challenges']['teamDamagePercentage']
+                visionScoreAdvantageLaneOpponent = player_data['challenges']['visionScoreAdvantageLaneOpponent']
+                visionScorePerMinute = player_data['challenges']['visionScorePerMinute']
+                detectorWardsPlaced = player_data['detectorWardsPlaced']
+                wardTakedownsBefore20M = player_data['challenges']['wardTakedownsBefore20M']
+                wardTakedowns = player_data['challenges']['wardTakedowns']
+                firstBloodKill = player_data['firstBloodKill']
+                firstBloodAssist = player_data['firstBloodAssist']
+                kda = player_data['challenges']['kda']
+                turretPlatesTaken = player_data['challenges']['turretPlatesTaken']
+                dragonKills = player_data['dragonKills']
+                wardsKilled = player_data['wardsKilled']
+                wardsPlaced = player_data['wardsPlaced']
+                maxCsAdvantageOnLaneOpponent=player_data['challenges']['maxCsAdvantageOnLaneOpponent']
+                laningPhaseGoldExpAdvantage=player_data['challenges']['laningPhaseGoldExpAdvantage']
+                danototal=player_data['totalDamageDealtToChampions']
+                dpm=danototal/minutos
+                goldtotal=player_data['goldEarned']
+                goldpm=goldtotal/minutos
+                danoporgold=goldtotal/danototal
 
-            ##timeline 6 min
-            cs_time6 = timeline6['minionsKilled']
-            cs_time_a6 = timeline_a6['minionsKilled']
-            cs_diff6 = cs_time6 - cs_time_a6
+                ##timeline 6 min
+                cs_time6 = timeline6['minionsKilled']
+                cs_time_a6 = timeline_a6['minionsKilled']
+                cs_diff6 = cs_time6 - cs_time_a6
 
-            jg6 = timeline6['jungleMinionsKilled']
-            jga6 = timeline_a6['jungleMinionsKilled']
-            jg_diff6 = jg6 - jga6
+                jg6 = timeline6['jungleMinionsKilled']
+                jga6 = timeline_a6['jungleMinionsKilled']
+                jg_diff6 = jg6 - jga6
 
-            gold6 = timeline6["totalGold"]
-            golda6 = timeline_a6["totalGold"]
-            golda6diff = gold6 - golda6
+                gold6 = timeline6["totalGold"]
+                golda6 = timeline_a6["totalGold"]
+                golda6diff = gold6 - golda6
 
-            xp6 = timeline6["xp"]
-            xpa6 = timeline_a6["xp"]
-            xp6diff = xp6 - xpa6
+                xp6 = timeline6["xp"]
+                xpa6 = timeline_a6["xp"]
+                xp6diff = xp6 - xpa6
 
-            danototal = timeline6['damageStats']['totalDamageDoneToChampions']
-            danorecebido = timeline_a6['damageStats']['totalDamageDoneToChampions']
-            danodiff6 = danototal - danorecebido
+                danototal = timeline6['damageStats']['totalDamageDoneToChampions']
+                danorecebido = timeline_a6['damageStats']['totalDamageDoneToChampions']
+                danodiff6 = danototal - danorecebido
 
-            danototal = timeline3['damageStats']['totalDamageDoneToChampions']
-            danorecebido = timeline_a3['damageStats']['totalDamageDoneToChampions']
-            danodiff3 = danototal - danorecebido
-
-
-            ### 15 min
-            cs_time15 = timeline15['minionsKilled']
-            cs_time_a15 = timeline_a15['minionsKilled']
-            cs_diff15 = cs_time15 - cs_time_a15
-
-            jg15 = timeline15['jungleMinionsKilled']
-            jga15 = timeline_a15['jungleMinionsKilled']
-            jg_diff15 = jg15 - jga15
-
-            gold15 = timeline15["totalGold"]
-            gold15rend=(timeline15["totalGold"]-timeline15["currentGold"])/(timeline15["totalGold"]+timeline15["currentGold"])
-            golda15 = timeline_a15["totalGold"]
-            golda15diff = gold15 - golda15
-
-            xp15 = timeline15["xp"]
-            xpa15 = timeline_a15["xp"]
-            xp15diff = xp15 - xpa15
-
-            danototal = timeline15['damageStats']['totalDamageDoneToChampions']
-            danorecebido = timeline_a15['damageStats']['totalDamageDoneToChampions']
-            danodiff15 = danototal - danorecebido
-
-            # add them to our dataset
-            data['Nick'].append(summoner_name.lower())
-            data['Data'].append(dia)
-            data['champion'].append(champion)
-            data['championenemy'].append(championenemy)
-            data['kills'].append(k)
-            data['deaths'].append(d)
-            data['assists'].append(a)
-            data['win'].append(boolean_to_int(win))
-            data['position'].append(position)
-            data['cs'].append(cs)
-            data['cspm'].append(cspm)
-            data['tempo_total'].append(tempo_total)
-            data[f'cs@{tempo1}'].append(cs_time6)
-            data[f'csdiff@{tempo1}'].append(cs_diff6)
-            data[f'jgdiff@{tempo1}'].append(jg_diff6)
-            data[f'golddiff@{tempo1}'].append(golda6diff)
-            data[f'xpdiff@{tempo1}'].append(xp6diff)
-            data[f'csdiff@{tempo2}'].append(cs_diff15)
-            data[f'jgdiff@{tempo2}'].append(jg_diff15)
-            data[f'golddiff@{tempo2}'].append(golda15diff)
-            data[f'xpdiff@{tempo2}'].append(xp15diff)
-            data[f'danodiff@{tempo1}'].append(danodiff6)
-            data[f'danodiff@{tempo2}'].append(danodiff15)
-            data['killParticipation'].append(killParticipation)
-            data['soloKills'].append(soloKills)
-            data['teamDamagePercentage'].append(teamDamagePercentage)
-            data['visionScoreAdvantageLaneOpponent'].append(visionScoreAdvantageLaneOpponent)
-            data['visionScorePerMinute'].append(visionScorePerMinute)
-            data['detectorWardsPlaced'].append(detectorWardsPlaced)
-            data['wardTakedownsBefore20M'].append(wardTakedownsBefore20M)
-            data['wardTakedowns'].append(wardTakedowns)
-            data['firstBloodKill'].append(boolean_to_int(firstBloodKill))
-            data['firstBloodAssist'].append(boolean_to_int(firstBloodAssist))
-            data['kda'].append(kda)
-            data['turretPlatesTaken'].append(turretPlatesTaken)
-            data['dragonKills'].append(dragonKills)
-            data['wardsKilled'].append(wardsKilled)
-            data['wardsPlaced'].append(wardsPlaced)
-            data['laningPhaseGoldExpAdvantage'].append(laningPhaseGoldExpAdvantage)
-            data['maxCsAdvantageOnLaneOpponent'].append(maxCsAdvantageOnLaneOpponent)
-            data['danodiff@3'].append(danodiff3)
-            data['Dpm'].append(dpm)
-            data['gameId'].append(gameId),
-            data['gold15rend'].append(gold15rend),
-            data['goldpm'].append(goldpm),
-            data['danoporgold'].append(danoporgold)
-            data['cspmjg'].append(cspmjg),
-            data['ygeral'].append(ygeral),
-            data['xgeral'].append(xgeral)
-            data['fbvitima'].append(int(fbvitima[0])),
-            data['wardtime'].append(wardtime),
-            data['Side'].append(side)
+                danototal = timeline3['damageStats']['totalDamageDoneToChampions']
+                danorecebido = timeline_a3['damageStats']['totalDamageDoneToChampions']
+                danodiff3 = danototal - danorecebido
 
 
-    df = pd.DataFrame(data)
-    return df
+                ### 15 min
+                cs_time15 = timeline15['minionsKilled']
+                cs_time_a15 = timeline_a15['minionsKilled']
+                cs_diff15 = cs_time15 - cs_time_a15
+
+                jg15 = timeline15['jungleMinionsKilled']
+                jga15 = timeline_a15['jungleMinionsKilled']
+                jg_diff15 = jg15 - jga15
+
+                gold15 = timeline15["totalGold"]
+                gold15rend=(timeline15["totalGold"]-timeline15["currentGold"])/(timeline15["totalGold"]+timeline15["currentGold"])
+                golda15 = timeline_a15["totalGold"]
+                golda15diff = gold15 - golda15
+
+                xp15 = timeline15["xp"]
+                xpa15 = timeline_a15["xp"]
+                xp15diff = xp15 - xpa15
+
+                danototal = timeline15['damageStats']['totalDamageDoneToChampions']
+                danorecebido = timeline_a15['damageStats']['totalDamageDoneToChampions']
+                danodiff15 = danototal - danorecebido
+
+                # add them to our dataset
+                data['Nick'].append(summoner_name.lower())
+                data['Data'].append(dia)
+                data['champion'].append(champion)
+                data['championenemy'].append(championenemy)
+                data['kills'].append(k)
+                data['deaths'].append(d)
+                data['assists'].append(a)
+                data['win'].append(boolean_to_int(win))
+                data['position'].append(position)
+                data['cs'].append(cs)
+                data['cspm'].append(cspm)
+                data['tempo_total'].append(tempo_total)
+                data[f'cs@{tempo1}'].append(cs_time6)
+                data[f'csdiff@{tempo1}'].append(cs_diff6)
+                data[f'jgdiff@{tempo1}'].append(jg_diff6)
+                data[f'golddiff@{tempo1}'].append(golda6diff)
+                data[f'xpdiff@{tempo1}'].append(xp6diff)
+                data[f'csdiff@{tempo2}'].append(cs_diff15)
+                data[f'jgdiff@{tempo2}'].append(jg_diff15)
+                data[f'golddiff@{tempo2}'].append(golda15diff)
+                data[f'xpdiff@{tempo2}'].append(xp15diff)
+                data[f'danodiff@{tempo1}'].append(danodiff6)
+                data[f'danodiff@{tempo2}'].append(danodiff15)
+                data['killParticipation'].append(killParticipation)
+                data['soloKills'].append(soloKills)
+                data['teamDamagePercentage'].append(teamDamagePercentage)
+                data['visionScoreAdvantageLaneOpponent'].append(visionScoreAdvantageLaneOpponent)
+                data['visionScorePerMinute'].append(visionScorePerMinute)
+                data['detectorWardsPlaced'].append(detectorWardsPlaced)
+                data['wardTakedownsBefore20M'].append(wardTakedownsBefore20M)
+                data['wardTakedowns'].append(wardTakedowns)
+                data['firstBloodKill'].append(boolean_to_int(firstBloodKill))
+                data['firstBloodAssist'].append(boolean_to_int(firstBloodAssist))
+                data['kda'].append(kda)
+                data['turretPlatesTaken'].append(turretPlatesTaken)
+                data['dragonKills'].append(dragonKills)
+                data['wardsKilled'].append(wardsKilled)
+                data['wardsPlaced'].append(wardsPlaced)
+                data['laningPhaseGoldExpAdvantage'].append(laningPhaseGoldExpAdvantage)
+                data['maxCsAdvantageOnLaneOpponent'].append(maxCsAdvantageOnLaneOpponent)
+                data['danodiff@3'].append(danodiff3)
+                data['Dpm'].append(dpm)
+                data['gameId'].append(gameId),
+                data['gold15rend'].append(gold15rend),
+                data['goldpm'].append(goldpm),
+                data['danoporgold'].append(danoporgold)
+                data['cspmjg'].append(cspmjg),
+                data['ygeral'].append(ygeral),
+                data['xgeral'].append(xgeral)
+                data['fbvitima'].append(int(fbvitima[0])),
+                data['wardtime'].append(wardtime),
+                data['Side'].append(side)
+
+
+        df = pd.DataFrame(data)
+        return df
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return None
 
 tempo1 = 5
 tempo2 = 15
@@ -457,9 +461,10 @@ def carregar_dados(summoner_name,role,start_time,tempo1,tempo2,api_keys):
     api_key1 = api_keys[1]
     start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
     start_time = int(start_time.timestamp())
-
-    puuid = get_puuid(summoner_name, region, api_key)
     puuid1 = get_puuid(summoner_name, region, api_key1)
+    print('AAAA')
+    puuid = get_puuid(summoner_name, region, api_key)
+    print('AAAA')
     match_ids = get_match_ids(puuid, mass_region, queue_id, api_key, start_time)
     max_threads = 20
     with concurrent.futures.ThreadPoolExecutor(max_threads) as executor:
@@ -475,7 +480,7 @@ def carregar_dados(summoner_name,role,start_time,tempo1,tempo2,api_keys):
                 puuid2=puuid1
             else:
                 puuid2 = puuid
-            future = executor.submit(gather_all_data,puuid2, match_id, mass_region, api_key, role, tempo1, tempo2)
+            future = executor.submit(gather_all_data,puuid, match_id, mass_region, api_key, role, tempo1, tempo2)
             futures.append(future)
 
         resultado = pd.DataFrame()
@@ -490,14 +495,14 @@ import time
 inicio=time.time()
 
 TOP = ["mirai547", "dontneedmemories", "Yozan", "tzic"]
-JUNGLE = ["Nero The Fik", "GAM Levi", "Lêvi", "sarolu", "n tenho mental"]
+JUNGLE = ["Nero The Fik", "GAM Levi", "Lêvi", "sarolu"]
 MIDDLE = ["TKZ O KOALA", "O KOALA", "O KOALA 2", "HKS Dazai", "Rei do Ocidente"]
 BOTTOM = ["HKS shima og", "AWE Fujita", "eihei", "Rabelokinho", "XiaoZhuanZhu", "Tessin1", "Tessin o matador"]
 UTILITY = ["houndin", "perseguindo", "Suunken", "OFF Suunken"]
 
 lista=[TOP,JUNGLE,MIDDLE,BOTTOM,UTILITY]
 number=0
-api_keys = ['RGAPI-171b896c-f6b7-4480-9e60-aea0a0c4c841', 'RGAPI-70194fff-b352-4a4e-ba5e-cf8a69b82862']
+api_keys = ['RGAPI-171b896c-f6b7-4480-9e60-aea0a0c4c841', 'RGAPI-171b896c-f6b7-4480-9e60-aea0a0c4c841']
 start_time='2023-09-20 00:00:00'
 data = pd.DataFrame()
 pdlgeral=pd.DataFrame()
@@ -509,7 +514,7 @@ for i in lista:
 
     for j in i:
         role=role[number]
-        summoner_name=j
+        summoner_name=str(j)
         print(type(role))
         print(summoner_name)
         df=carregar_dados(summoner_name,role,start_time,5,15,api_keys)
