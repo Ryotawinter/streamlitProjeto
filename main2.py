@@ -256,7 +256,7 @@ with tab2:
                 st.write(f'DPM:{dpm}')
                 st.write(f'Dano por gold: {danoporgold}')
         with st.container():
-            if partidas != 1:
+            if partidas != '1':
                 if 'df' in locals():
                     col1, col2, col3 = st.columns(3)
                     with col1:
