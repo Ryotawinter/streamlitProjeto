@@ -65,6 +65,7 @@ with st.sidebar:
         partidas = st.selectbox("Partidas:", [":", "15", "10", "5", "1"])
         separacao = st.selectbox("Separação dos dados:", ["Dias", "Partidas"])
         divisao = st.selectbox("Champs com maior:", ["Win Rate", "Numero de Jogos"])
+
         if st.button("Buscar Partidas"):
                 geral = carregar_dados(summoner_name,data_inicial,data_atual)
                 df_total=geral[0]
@@ -76,13 +77,14 @@ with st.sidebar:
                 else:
                     df = df_total[:int(partidas)]
     with st.container():
-        winrate = ((pdl["wins"]) / (pdl["wins"] + pdl["losses"])) * 100
-        a = pdl[["wins", 'losses']]
-        cores = {'wins': 'red', 'losses': 'lightblue'}
-        fig_kind = px.pie(a, names=a.columns, values=a.values[0], color=['lightblue', 'red'],
-                          title=f'Soloq - Win Rate em {a.values[0].sum()} partidas')
-        st.plotly_chart(fig_kind, use_container_width=True)
-        st.write(f'Tier: {pdl["tier"].iloc[0]} {pdl["rank"].iloc[0]} - PDL: {pdl["leaguePoints"].iloc[0]}')
+        if 'df' in locals():
+            winrate = ((pdl["wins"]) / (pdl["wins"] + pdl["losses"])) * 100
+            a = pdl[["wins", 'losses']]
+            cores = {'wins': 'red', 'losses': 'lightblue'}
+            fig_kind = px.pie(a, names=a.columns, values=a.values[0], color=['lightblue', 'red'],
+                              title=f'Soloq - Win Rate em {a.values[0].sum()} partidas')
+            st.plotly_chart(fig_kind, use_container_width=True)
+            st.write(f'Tier: {pdl["tier"].iloc[0]} {pdl["rank"].iloc[0]} - PDL: {pdl["leaguePoints"].iloc[0]}')
 
 
 tab1, tab2 = st.tabs(["Early Game", "Total"])
@@ -257,49 +259,50 @@ with tab2:
                 st.write(f'DPM:{dpm}')
                 st.write(f'Dano por gold: {danoporgold}')
         with st.container():
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.subheader('Soloq')
-              
-            with col2:
+            if 'df' in locals():
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.subheader('Soloq')
 
-                st.subheader('Champions Win rate')
-                win_loss_counts = df.groupby('champion')['win'].value_counts().unstack(fill_value=0)
+                with col2:
 
-                # Calcular a win rate para cada campeão
-                if divisao=="Win Rate":
-                    win_rate = (win_loss_counts[1] / (win_loss_counts[0] + win_loss_counts[1])) * 100
-                else :
-                    win_rate = ((win_loss_counts[1] + win_loss_counts[0])) * 100
+                    st.subheader('Champions Win rate')
+                    win_loss_counts = df.groupby('champion')['win'].value_counts().unstack(fill_value=0)
 
-                # Classificar os campeões pela win rate em ordem decrescente
-                sorted_win_rate = win_rate.sort_values(ascending=False)
+                    # Calcular a win rate para cada campeão
+                    if divisao=="Win Rate":
+                        win_rate = (win_loss_counts[1] / (win_loss_counts[0] + win_loss_counts[1])) * 100
+                    else :
+                        win_rate = ((win_loss_counts[1] + win_loss_counts[0])) * 100
 
-                # Selecionar os 3 melhores campeões com win rate mais alta
-                top_3_champions = sorted_win_rate.head(3)
+                    # Classificar os campeões pela win rate em ordem decrescente
+                    sorted_win_rate = win_rate.sort_values(ascending=False)
 
-                # Imprimir os 3 melhores campeões com suas win rates, vitórias e derrotas
-                i=0
-                for champion in top_3_champions.items():
-                    champion=champion[0]
-                    gold=df.loc[df['champion']==champion]
-                    average_gold_diff6 = gold['golddiff@5'].mean()
-                    average_gold_diff15 = gold['golddiff@15'].mean()
-                    wins = win_loss_counts.loc[champion, 1]
-                    losses = win_loss_counts.loc[champion, 0]
-                    win_rate1 = (wins / (wins + losses)) * 100
-                    if win_rate1>50:
-                        color='green'
-                    else:
-                        color='red'
-                    if average_gold_diff6>0:
-                        color1='green'
-                        mais='+'
-                    else:
-                        color1='red'
-                        mais=''
-                    st.markdown(f"Campeão: {champion} - Win Rate: :{color}[{win_rate1:.2f}%] - Vitórias: {wins} -Derrotas: {losses} - Gold diff @5: :{color1}[{mais}{average_gold_diff6:.2f}]")
-                    i+=1
+                    # Selecionar os 3 melhores campeões com win rate mais alta
+                    top_3_champions = sorted_win_rate.head(3)
+
+                    # Imprimir os 3 melhores campeões com suas win rates, vitórias e derrotas
+                    i=0
+                    for champion in top_3_champions.items():
+                        champion=champion[0]
+                        gold=df.loc[df['champion']==champion]
+                        average_gold_diff6 = gold['golddiff@5'].mean()
+                        average_gold_diff15 = gold['golddiff@15'].mean()
+                        wins = win_loss_counts.loc[champion, 1]
+                        losses = win_loss_counts.loc[champion, 0]
+                        win_rate1 = (wins / (wins + losses)) * 100
+                        if win_rate1>50:
+                            color='green'
+                        else:
+                            color='red'
+                        if average_gold_diff6>0:
+                            color1='green'
+                            mais='+'
+                        else:
+                            color1='red'
+                            mais=''
+                        st.markdown(f"Campeão: {champion} - Win Rate: :{color}[{win_rate1:.2f}%] - Vitórias: {wins} -Derrotas: {losses} - Gold diff @5: :{color1}[{mais}{average_gold_diff6:.2f}]")
+                        i+=1
 
 
 
