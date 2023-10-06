@@ -78,7 +78,7 @@ with st.sidebar:
             cores = {'wins': '#48D1CC', 'losses': '#90EE90'}
             fig_kind = px.pie(a, names=a.columns, values=a.values[0], color=['#48D1CC', '#90EE90'],
                               title=f'Soloq - Win Rate em {a.values[0].sum()} partidas')
-            st.plotly_chart(fig_kind, use_container_width=True)
+            st.plotly_chart(fig_kind, use_container_width=True, theme='streamlit')
             st.write(f'Tier: {pdl["tier"].iloc[0]} {pdl["rank"].iloc[0]} - PDL: {pdl["leaguePoints"].iloc[0]}')
 
 
