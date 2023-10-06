@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 from datetime import datetime
 import plotly.express as px
+import plotly.io as pio
 
 
 st.set_page_config(
@@ -76,9 +77,10 @@ with st.sidebar:
             winrate = ((pdl["wins"]) / (pdl["wins"] + pdl["losses"])) * 100
             a = pdl[["wins", 'losses']]
             cores = {'wins': '#48D1CC', 'losses': '#90EE90'}
+            pio.templates.default = "plotly"
             fig_kind = px.pie(a, names=a.columns, values=a.values[0], color=['#48D1CC', '#90EE90'],
                               title=f'Soloq - Win Rate em {a.values[0].sum()} partidas')
-            st.plotly_chart(fig_kind, use_container_width=True, theme='streamlit')
+            st.plotly_chart(fig_kind, use_container_width=True)
             st.write(f'Tier: {pdl["tier"].iloc[0]} {pdl["rank"].iloc[0]} - PDL: {pdl["leaguePoints"].iloc[0]}')
 
 
