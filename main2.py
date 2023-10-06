@@ -7,15 +7,10 @@ import plotly.express as px
 
 
 st.set_page_config(
-    page_title="Ex-stream-ly Cool App",
-    page_icon="🧊",
+    page_title="Projeto Medina",
+    page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
-    }
 )
 
 @st.cache_data
@@ -81,7 +76,7 @@ with st.sidebar:
             winrate = ((pdl["wins"]) / (pdl["wins"] + pdl["losses"])) * 100
             a = pdl[["wins", 'losses']]
             cores = {'wins': 'red', 'losses': 'lightblue'}
-            fig_kind = px.pie(a, names=a.columns, values=a.values[0], color=['lightblue', 'red'],
+            fig_kind = px.pie(a, names=a.columns, values=a.values[0], color=['blue', 'red'],
                               title=f'Soloq - Win Rate em {a.values[0].sum()} partidas')
             st.plotly_chart(fig_kind, use_container_width=True)
             st.write(f'Tier: {pdl["tier"].iloc[0]} {pdl["rank"].iloc[0]} - PDL: {pdl["leaguePoints"].iloc[0]}')
