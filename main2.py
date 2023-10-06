@@ -264,7 +264,7 @@ with tab2:
                 with col2:
 
                     st.subheader('Champions Win rate')
-                    win_loss_counts = df.groupby('champion')['win'].value_counts().unstack(fill_value=0)
+                    win_loss_counts = df.groupby('champion')['win'].value_counts()
 
                     # Calcular a win rate para cada campeão
                     if divisao=="Win Rate":
