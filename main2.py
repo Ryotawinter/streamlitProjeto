@@ -52,7 +52,7 @@ def heatmappsotion(df_total, side):
     fig, ax = plt.subplots(facecolor='#0c1414')
 
     # Plote o mapa de densidade de kernel (KDE) na figura
-    sns.kdeplot(data=data, x='xgeral', y='ygeral', cmap="RdPu", fill=True, thresh=0.3, levels=6, alpha=0.4, ax=ax)
+    sns.kdeplot(data=data, x='xgeral', y='ygeral', cmap="RdPu", fill=True, thresh=0.3, levels=6, alpha=0.4,warn_singular=False, ax=ax)
 
     # Plote os pontos de dispersão no mesmo eixo
     ax.scatter(x_geral, y_geral, c='darkred', s=5)
