@@ -335,7 +335,9 @@ try:
                 mean_teamDamagePercentage = df['teamDamagePercentage'].mean()
                 mean_visionScoreAdvantageLaneOpponent = round(df['visionScoreAdvantageLaneOpponent'].mean(), 2)
                 mean_visionScorePerMinute = round(df['visionScorePerMinute'].mean(), 2)
-                mean_detectorWardsPlaced = round(df['detectorwardsdestruidaspm'].mean(), 2)
+                mean_detectorWardsPlacedpm = round(df['detectorwardsdestruidaspm'].mean(), 2)
+                mean_detectorWardsPlaced = round(df['detectorWardsPlaced'].mean(), 2)
+
                 mean_wardTakedownsBefore20M = round(df['wardTakedownsBefore20M'].mean(), 1)
                 mean_wardTakedowns = round(df['wardTakedowns'].mean(), 1)
 
@@ -347,7 +349,8 @@ try:
                 mean_turretPlatesTaken = round(df['turretPlatesTaken'].mean(), 1)
                 mean_dragonKills = round(df['dragonKills'].mean(), 1)
                 mean_wardsKilled = round(df['wardsdestruidaspm'].mean(), 2)
-                mean_wardsPlaced = round(df['wardspm'].mean(), 2)
+                mean_wardsPlacedpm = round(df['wardspm'].mean(), 2)
+                mean_wardsPlaced=round(df['wardsPlaced'].mean(), 2)
                 dpm=round(df['Dpm'].mean(),2)
                 gold15rend=round(df['gold15rend'].mean(),2)
                 goldpm=round(df['goldpm'].mean(),2)
@@ -361,10 +364,10 @@ try:
                     st.subheader('Visão')
                     st.write(f'VisionScorepm: {mean_visionScorePerMinute}({VisionScorepmcomp})')
                     st.write(f'VisionScore diff: {mean_visionScoreAdvantageLaneOpponent}')
-                    st.write(f'Sentinela Detectora colocada por minuto: {mean_detectorWardsPlaced}({pinkcomp})')
+                    st.write(f'Sentinela Detectora colocada por minuto: {mean_detectorWardsPlacedpm}({pinkcomp}) - Pinks colocados {mean_detectorWardsPlaced}')
                     st.write(f'Ward destruidas antes dos 20m: {mean_wardTakedownsBefore20M}')
                     st.write(f'Wards Destruidas por minuto: {mean_wardsKilled}({wardskiledcomp })')
-                    st.write(f'Wards colocadas por minuto: {mean_wardsPlaced}({wardsplacedcomp})')
+                    st.write(f'Wards colocadas por minuto: {mean_wardsPlacedpm}({wardsplacedcomp}) - Wards colocados {mean_wardsPlaced} ')
                     st.write(f'O tempo médio da primeira ward: {tempofirstward(df)}({tempofirstwardcomp })')
 
                 with col2:
