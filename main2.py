@@ -133,6 +133,8 @@ with st.sidebar:
                     df = df_total[:int(partidas)]
                 store_dataframe(df)
 
+
+
     with st.container():
         if 'df' in locals():
             winrate = ((pdl["wins"]) / (pdl["wins"] + pdl["losses"])) * 100
@@ -268,13 +270,72 @@ try:
         col1, col2 ,col3, col4= st.columns(4)
         if 'df' in locals():
             with st.container():
+                if str(df.iloc[0,:]['position'])=='MIDDLE':
+                    Cspmcomp=9.00
+                    DPMcomp=950.23
+                    tempofirstwardcomp=str('2:26')
+                    VisionScorepmcomp=1.3
+                    pinkcomp=0.11
+                    wardsplacedcomp=0.5
+                    wardskiledcomp=0.4
+                    percentdanocomp='28%'
+                    Goldpmcomp=497.37
+                    dragonskillcomp = ''
+                elif str(df.iloc[0,:]['position'])=='BOTTOM':
+                    Cspmcomp = 8.51
+                    DPMcomp = 880.0
+                    tempofirstwardcomp = str('2:52')
+                    VisionScorepmcomp = 1.2
+                    pinkcomp = 0.11
+                    wardsplacedcomp = 0.5
+                    wardskiledcomp = 0.3
+                    percentdanocomp = '27%'
+                    Goldpmcomp = 520.95
+                    dragonskillcomp = ''
+                elif str(df.iloc[0,:]['position'])=='JUNGLE':
+                    Cspmcomp = 6.03
+                    DPMcomp = 739.6
+                    tempofirstwardcomp = str('2:56')
+                    VisionScorepmcomp = 1.32
+                    pinkcomp = 0.25
+                    wardsplacedcomp = 0.5
+                    wardskiledcomp = 0.30
+                    percentdanocomp = '23%'
+                    Goldpmcomp = 469.76
+                    dragonskillcomp=2.3
+                elif str(df.iloc[0,:]['position'])=='TOP':
+                    Cspmcomp = 7.45
+                    DPMcomp = 766.71
+                    tempofirstwardcomp = str('3:01')
+                    VisionScorepmcomp = 0.86
+                    pinkcomp = 0.14
+                    wardsplacedcomp = 0.44
+                    wardskiledcomp = 0.10
+                    percentdanocomp = '24%'
+                    Goldpmcomp = 449.07
+                    dragonskillcomp=''
+
+                elif str(df.iloc[0,:]['position'])=='UTILITY':
+                    Cspmcomp = ''
+                    DPMcomp = ''
+                    tempofirstwardcomp = str('2:40')
+                    VisionScorepmcomp = 3.01
+                    pinkcomp = 0.3
+                    wardsplacedcomp = 1.38
+                    wardskiledcomp = 0.5
+                    percentdanocomp = ''
+                    Goldpmcomp = 310.85
+                    dragonskillcomp = ''
+
                 # Calcula a média de cada métrica
                 df[['minutos', 'segundos']] = df['tempo_total'].str.split(':', expand=True).astype(int)
                 df['wardspm']=df['wardsPlaced']/df['minutos']
+                df['wardsdestruidaspm'] = df['wardsKilled'] / df['minutos']
+                df['detectorwardsdestruidaspm']=df['detectorWardsPlaced']/ df['minutos']
                 mean_teamDamagePercentage = df['teamDamagePercentage'].mean()
-                mean_visionScoreAdvantageLaneOpponent = round(df['visionScoreAdvantageLaneOpponent'].mean(), 1)
-                mean_visionScorePerMinute = round(df['visionScorePerMinute'].mean(), 1)
-                mean_detectorWardsPlaced = round(df['detectorWardsPlaced'].mean(), 1)
+                mean_visionScoreAdvantageLaneOpponent = round(df['visionScoreAdvantageLaneOpponent'].mean(), 2)
+                mean_visionScorePerMinute = round(df['visionScorePerMinute'].mean(), 2)
+                mean_detectorWardsPlaced = round(df['detectorwardsdestruidaspm'].mean(), 2)
                 mean_wardTakedownsBefore20M = round(df['wardTakedownsBefore20M'].mean(), 1)
                 mean_wardTakedowns = round(df['wardTakedowns'].mean(), 1)
 
@@ -285,8 +346,8 @@ try:
                 mean_kda = round(df['kda'].mean(), 1)
                 mean_turretPlatesTaken = round(df['turretPlatesTaken'].mean(), 1)
                 mean_dragonKills = round(df['dragonKills'].mean(), 1)
-                mean_wardsKilled = round(df['wardsKilled'].mean(), 1)
-                mean_wardsPlaced = round(df['wardspm'].mean(), 1)
+                mean_wardsKilled = round(df['wardsdestruidaspm'].mean(), 2)
+                mean_wardsPlaced = round(df['wardspm'].mean(), 2)
                 dpm=round(df['Dpm'].mean(),2)
                 gold15rend=round(df['gold15rend'].mean(),2)
                 goldpm=round(df['goldpm'].mean(),2)
@@ -298,34 +359,34 @@ try:
 
                 with col1:
                     st.subheader('Visão')
-                    st.write(f'VisionScorepm: {mean_visionScorePerMinute}')
+                    st.write(f'VisionScorepm: {mean_visionScorePerMinute}({VisionScorepmcomp})')
                     st.write(f'VisionScore diff: {mean_visionScoreAdvantageLaneOpponent}')
-                    st.write(f'Sentinela Detectora colocada: {mean_detectorWardsPlaced}')
+                    st.write(f'Sentinela Detectora colocada por minuto: {mean_detectorWardsPlaced}({pinkcomp})')
                     st.write(f'Ward destruidas antes dos 20m: {mean_wardTakedownsBefore20M}')
-                    st.write(f'Wards Destruidas: {mean_wardsKilled}')
-                    st.write(f'Wards colocadas por minuto: {mean_wardsPlaced}')
-                    st.write(f'O tempo médio da primeira ward: {tempofirstward(df)}')
+                    st.write(f'Wards Destruidas por minuto: {mean_wardsKilled}({wardskiledcomp })')
+                    st.write(f'Wards colocadas por minuto: {mean_wardsPlaced}({wardsplacedcomp})')
+                    st.write(f'O tempo médio da primeira ward: {tempofirstward(df)}({tempofirstwardcomp })')
 
                 with col2:
                     st.subheader('Objetivos')
-                    st.write(f'Média de dragonKills: {mean_dragonKills}')
+                    st.write(f'Média de dragonKills: {mean_dragonKills}({dragonskillcomp })')
                     st.write(f'Média de Plates: {mean_turretPlatesTaken}')
                     st.write(f'Gold efetivo aos 15: {gold15rend}')
-                    st.write(f'Goldpm: {goldpm}')
+                    st.write(f'Goldpm: {goldpm}({Goldpmcomp})')
 
 
                 with col3:
                     st.subheader('Combate')
                     role = (df.iloc[0, :])
                     if role['position'] == 'JUNGLE':
-                        st.write(f'Cspm: {round(df["cspmjg"].mean(),2)}')
+                        st.write(f'Cspm: {round(df["cspmjg"].mean(),2)}({Cspmcomp})')
                     else:
-                        st.write(f'Cspm: {round(df["cspm"].mean(), 2)}')
-                    st.write(f'Porcentagem de Dano do time: {round(mean_teamDamagePercentage*100,1)}%')
+                        st.write(f'Cspm: {round(df["cspm"].mean(), 2)}({Cspmcomp})')
+                    st.write(f'Porcentagem de Dano do time: {round(mean_teamDamagePercentage*100,1)}%({percentdanocomp })')
                     st.write(f'Participação em FB: {round((mean_fbpart)*100,1)}%')
                     st.write(f'Vitima de FB: {round((victimfb) * 100, 1)}%')
                     st.write(f'KDA: {mean_kda}')
-                    st.write(f'DPM:{dpm}')
+                    st.write(f'DPM:{dpm}({DPMcomp})')
                     st.write(f'Dano por gold: {danoporgold}')
 
                     with col4:
@@ -381,7 +442,7 @@ try:
                             st.pyplot(plot,use_container_width=True)
 except Exception as e:
     st.subheader('Esperando Dados...')
-    #print(f"Erro na função process_data(): {str(e)}")
+    print(f"Erro na função process_data(): {str(e)}")
 
 
 
