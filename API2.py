@@ -494,15 +494,15 @@ def carregar_dados(summoner_name,role,start_time,tempo1,tempo2,api_keys):
 import time
 inicio=time.time()
 
-TOP = ["mirai547", "dontneedmemories", "Yozan", "tzic"]
-JUNGLE = ["Nero The Fik", "GAM Levi", "Lêvi", "sarolu"]
-MIDDLE = ["TKZ O KOALA", "O KOALA", "O KOALA 2", "HKS Dazai", "Rei do Ocidente"]
+TOP = ['Merkatos','Master 200KM','Hakari',"mirai547", "dontneedmemories", "Yozan", "tzic"]
+JUNGLE = ["Nero The Fik",'FA letter','WR PLAYER', "GAM Levi", "Lêvi", "sarolu",'Vinicete','n tenho mental']
+MIDDLE = ['azek',"TKZ O KOALA", "O KOALA", "O KOALA 2", "HKS Dazai", "Rei do Ocidente"]
 BOTTOM = ["HKS shima og", "AWE Fujita", "eihei", "Rabelokinho", "XiaoZhuanZhu", "Tessin1", "Tessin o matador"]
-UTILITY = ["houndin", "perseguindo", "Suunken", "OFF Suunken"]
+UTILITY = ["houndin",'Indila4', "grixfyy",'Kita1',"Suunken", "OFF Suunken"]
 
 lista=[TOP,JUNGLE,MIDDLE,BOTTOM,UTILITY]
 number=0
-api_keys = ['RGAPI-171b896c-f6b7-4480-9e60-aea0a0c4c841', 'RGAPI-171b896c-f6b7-4480-9e60-aea0a0c4c841']
+api_keys = ['RGAPI-448ce467-3b1b-4cac-96c5-9613331437fc', 'RGAPI-df6cb55a-a3f6-49ea-ad1d-3ec3e40ac3dc']
 start_time='2023-09-20 00:00:00'
 data = pd.DataFrame()
 pdlgeral=pd.DataFrame()
@@ -510,17 +510,16 @@ pdlgeral=pd.DataFrame()
 
 
 for i in lista:
-    role=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY']
-
+    role1=['TOP','JUNGLE','MIDDLE','BOTTOM','UTILITY']
     for j in i:
-        role=role[number]
+        role=role1[number]
         summoner_name=str(j)
-        print(type(role))
+        print(role)
         print(summoner_name)
         df=carregar_dados(summoner_name,role,start_time,5,15,api_keys)
         #pdl=rank(summoner_name,'BR1',api_keys[0])
         #pdlgeral= pd.concat([pdlgeral, pdl], ignore_index=True)
-        print(data)
+        print(df)
         data = pd.concat([data, df], ignore_index=True)
         time.sleep(60)
     number += 1
@@ -540,7 +539,7 @@ caminho = os.path.join(pasta_destino, nome_arquivo)
 caminho_1 = os.path.join(pasta_destino, nome_arquivo1)
 
 
-data.to_pickle(caminho)
+data.to_pickle(nome_arquivo)
 #pdlgeral.to_csv(caminho_1, index=False)
 
 

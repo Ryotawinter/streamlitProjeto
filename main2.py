@@ -74,7 +74,8 @@ def heatmappsotion(df_total, side):
     return fig
 
 def tempofirstward(df):
-    df = df.dropna(subset=['wardtime'], how='all')
+    df['wardtime'] = df['wardtime'].apply(lambda x: x if (x is not None and len(x) > 0) else None)
+    df = df.dropna(subset=['wardtime'])
     media_primeiro_elemento  = df['wardtime'].apply(lambda x: x[0])
     media_primeiro_elemento=media_primeiro_elemento.mean()
     minuto=(media_primeiro_elemento/1000)//60
@@ -268,6 +269,8 @@ try:
         if 'df' in locals():
             with st.container():
                 # Calcula a média de cada métrica
+                df[['minutos', 'segundos']] = df['tempo_total'].str.split(':', expand=True).astype(int)
+                df['wardspm']=df['wardsPlaced']/df['minutos']
                 mean_teamDamagePercentage = df['teamDamagePercentage'].mean()
                 mean_visionScoreAdvantageLaneOpponent = round(df['visionScoreAdvantageLaneOpponent'].mean(), 1)
                 mean_visionScorePerMinute = round(df['visionScorePerMinute'].mean(), 1)
@@ -283,7 +286,7 @@ try:
                 mean_turretPlatesTaken = round(df['turretPlatesTaken'].mean(), 1)
                 mean_dragonKills = round(df['dragonKills'].mean(), 1)
                 mean_wardsKilled = round(df['wardsKilled'].mean(), 1)
-                mean_wardsPlaced = round(df['wardsPlaced'].mean(), 1)
+                mean_wardsPlaced = round(df['wardspm'].mean(), 1)
                 dpm=round(df['Dpm'].mean(),2)
                 gold15rend=round(df['gold15rend'].mean(),2)
                 goldpm=round(df['goldpm'].mean(),2)
@@ -300,8 +303,9 @@ try:
                     st.write(f'Sentinela Detectora colocada: {mean_detectorWardsPlaced}')
                     st.write(f'Ward destruidas antes dos 20m: {mean_wardTakedownsBefore20M}')
                     st.write(f'Wards Destruidas: {mean_wardsKilled}')
-                    st.write(f'Wards colocadas: {mean_wardsPlaced}')
+                    st.write(f'Wards colocadas por minuto: {mean_wardsPlaced}')
                     st.write(f'O tempo médio da primeira ward: {tempofirstward(df)}')
+
                 with col2:
                     st.subheader('Objetivos')
                     st.write(f'Média de dragonKills: {mean_dragonKills}')
@@ -375,8 +379,9 @@ try:
                             side=side.lower()
                             plot=heatmappsotion(df,side)
                             st.pyplot(plot,use_container_width=True)
-except:
-    st.subheader('Esperando.....')
+except Exception as e:
+    st.subheader('Esperando Dados...')
+    #print(f"Erro na função process_data(): {str(e)}")
 
 
 
