@@ -101,12 +101,12 @@ with st.sidebar:
     with st.container():
         st.title('Estatisticas Soloq')
         # Coletando parâmetros do usuário
-        summoner_name = st.text_input("Nome do Summoner")
+        summoner_name = st.selectbox("Nick:", ['xoska','Titeito','Qats','lolo','Aithusa','Zayco'])
         summoner_name=summoner_name.lower()
         data_atual = datetime.now()
 
 
-        data_inicial=datetime(2023,9,1)
+        data_inicial=datetime(2023,12,21)
         year_range = st.slider(label="Selecione uma Data:", min_value=data_inicial, max_value=data_atual, value=[data_inicial,data_atual])
         data_inicial = str(data_inicial).split(' ')
         data_inicial = data_inicial[0]
