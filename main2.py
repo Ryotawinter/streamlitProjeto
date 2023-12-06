@@ -85,7 +85,7 @@ def tempofirstward(df):
 
 def plot_stat_diff(df, tempo, stat_name,separacao):
     if separacao=='Dias':
-        if tempo == 5:
+        if tempo == 8:
             stat_mean = df.groupby('Data')[f'{stat_name}@{tempo}'].mean()
             stat_mean1 = df.groupby('Data')[f'{stat_name}@15'].mean()
             result_df = pd.merge(stat_mean, stat_mean1, on='Data', how='inner')
@@ -101,8 +101,8 @@ with st.sidebar:
     with st.container():
         st.title('Estatisticas Soloq')
         # Coletando parâmetros do usuário
-        summoner_name = st.selectbox("Nick:", ['xoska','Titeito','Qats','lolo','Aithusa','Zayco'])
-        summoner_name=summoner_name.lower()
+        summoner_name = st.selectbox("Nick:", ['xoska', 'Titeito', 'Qats', 'lolo', 'Aithusa', 'Zayco'])
+        summoner_name = summoner_name.lower()
         data_atual = datetime.now()
 
 
@@ -112,7 +112,7 @@ with st.sidebar:
         data_inicial = data_inicial[0]
         data_atual=str(data_atual).split(' ')
         data_atual = data_atual[0]
-        tempo1=5
+        tempo1=8
         tempo2=15
 
         partidas = st.selectbox("Partidas:", [":", "15", "10", "5", "1"])
@@ -214,23 +214,23 @@ try:
                         with col1:
                             cs_med = round(df[f'csdiff@{tempo1}'].mean(), 1)
                             if cs_med > 0:
-                                st.markdown(f'''Cs diff aos 5: :green[+{cs_med}]''')
+                                st.markdown(f'''Cs diff aos 8: :green[+{cs_med}]''')
                             else:
-                                st.markdown(f'''Cs diff aos 5: :red[{cs_med}]''')
+                                st.markdown(f'''Cs diff aos 8: :red[{cs_med}]''')
 
                     with col2:
                         xp_med = round(df[f'xpdiff@{tempo1}'].mean(), 1)
                         if xp_med > 0:
-                            st.markdown(f'''XP diff aos 5: :green[+{xp_med}]''')
+                            st.markdown(f'''XP diff aos 8: :green[+{xp_med}]''')
                         else:
-                            st.markdown(f'''XP diff aos 5: :red[{xp_med}]''')
+                            st.markdown(f'''XP diff aos 8: :red[{xp_med}]''')
 
                     with col3:
                         gold_med = round(df[f'golddiff@{tempo1}'].mean(), 1)
                         if gold_med > 0:
-                            st.markdown(f'''Gold diff aos 5: :green[+{gold_med}]''')
+                            st.markdown(f'''Gold diff aos 8: :green[+{gold_med}]''')
                         else:
-                            st.markdown(f'''Gold diff aos 5: :red[{gold_med}]''')
+                            st.markdown(f'''Gold diff aos 8: :red[{gold_med}]''')
 
                     with col4:
                         danodiff_med = round(df[f'danodiff@{tempo1}'].mean(), 1)
@@ -254,17 +254,17 @@ try:
                     role = (df.iloc[0, :])
                     if role['position'] == 'JUNGLE':
                         st.subheader("CS jg diff médio ")
-                        plot_stat_diff(df, 5, 'jgdiff',separacao)
+                        plot_stat_diff(df, 8, 'jgdiff',separacao)
                     else:
                         st.subheader("CS diff médio ")
-                        plot_stat_diff(df, 5, 'csdiff',separacao)
+                        plot_stat_diff(df, 8, 'csdiff',separacao)
                     st.subheader("Gold diff médio")
-                    plot_stat_diff(df, 5, 'golddiff',separacao)
+                    plot_stat_diff(df, 8, 'golddiff',separacao)
                 with col2:
                     st.subheader("Xp diff médio")
-                    plot_stat_diff(df, 5, 'xpdiff',separacao)
+                    plot_stat_diff(df, 8, 'xpdiff',separacao)
                     st.subheader("Dano diff médio")
-                    plot_stat_diff(df, 5, 'danodiff',separacao)
+                    plot_stat_diff(df, 8, 'danodiff',separacao)
 
     with tab2:
         col1, col2 ,col3, col4= st.columns(4)
@@ -415,7 +415,7 @@ try:
                         for champion in top_3_champions.items():
                             champion = champion[0]
                             gold = df.loc[df['champion'] == champion]
-                            average_gold_diff6 = gold['golddiff@5'].mean()
+                            average_gold_diff6 = gold['golddiff@8'].mean()
                             average_gold_diff15 = gold['golddiff@15'].mean()
                             wins = win_loss_counts.loc[champion, 1]
                             losses = win_loss_counts.loc[champion, 0]
@@ -431,8 +431,12 @@ try:
                                 color1 = 'red'
                                 mais = ''
                             st.markdown(
-                                f"Campeão: {champion} - Win Rate: :{color}[{win_rate1:.2f}%] - Vitórias: {wins} -Derrotas: {losses} - Gold diff @5: :{color1}[{mais}{average_gold_diff6:.2f}]")
+                                f"Campeão: {champion} - Win Rate: :{color}[{win_rate1:.2f}%] - Vitórias: {wins} -Derrotas: {losses} - Gold diff @8: :{color1}[{mais}{average_gold_diff6:.2f}]")
                             i += 1
+                        pool = df['champion'].unique().tolist()
+                        st.subheader('Pool')
+                        for i in pool:
+                            st.write(i)
             with st.container():
                 col1, col2, col3 = st.columns(3)
                 if partidas != '1':
