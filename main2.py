@@ -101,7 +101,7 @@ with st.sidebar:
     with st.container():
         st.title('Estatisticas Soloq')
         # Coletando parâmetros do usuário
-        summoner_name = st.selectbox("Nick:", ['Namiru','Maxmüs','Krastyel1','xoska', 'Titeito', 'Qats', 'lolo', 'Aithusa', 'Zayco'])
+        summoner_name = st.selectbox("Nick:", ['Picknn','Namiru','Maxmüs','Krastyel1','xoska', 'Titeito', 'Qats', 'lolo', 'Aithusa', 'Zayco'])
         summoner_name = summoner_name.lower()
         data_atual = datetime.now()
 
