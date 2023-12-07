@@ -106,7 +106,7 @@ with st.sidebar:
         data_atual = datetime.now()
 
 
-        data_inicial=datetime(2023,10,21)
+        data_inicial=datetime(2023,09,21)
         year_range = st.slider(label="Selecione uma Data:", min_value=data_inicial, max_value=data_atual, value=[data_inicial,data_atual])
         data_inicial = str(data_inicial).split(' ')
         data_inicial = data_inicial[0]
